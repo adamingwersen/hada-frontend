@@ -1,0 +1,8 @@
+query getOrganisationById($id: ID!) {
+  findOrganisationById(id: $id) {
+    _id
+    name
+    industryType
+    planTier
+  }
+}

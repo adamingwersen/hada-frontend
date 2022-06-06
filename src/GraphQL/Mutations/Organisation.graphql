@@ -1,0 +1,8 @@
+mutation createOrganisation($organisation: CreateOrganisationInput) {
+  createOrganisation(organisation: $organisation) {
+    _id
+    name
+    industryType
+    planTier
+  }
+}
