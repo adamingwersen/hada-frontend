@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 
 import { Button as MButton, Code, Container, Grid, TextInput } from "@mantine/core";
-import { useGoogleLogin } from "@react-oauth/google";
 
-import { TokenResponse } from "../constants/google-auth.types";
-import { DisplayOrganisation } from "../stories/Container/DisplayOrganisation/DisplayOrganisation";
+import { DisplayOrganisation } from "../components/Container/DisplayOrganisation/DisplayOrganisation";
+import { GoogleSignUp } from "../components/Container/GoogleSignUp/GoogleSignUp";
 
 // const CLIENT_ID =
 //   "815017879896-cuosdebbjmvlm3l41aevv4kqogi5nk6t.apps.googleusercontent.com";
@@ -15,22 +14,8 @@ export const SignUp = () => {
   const [userToken, setUserToken] = useState<string>();
   const [specificUserData, setSpecificUserData] = useState<any>("None");
 
-  const onLoginSuccess = (tokenResponse: TokenResponse) => {
-    console.log(tokenResponse);
-    console.log(tokenResponse.access_token);
-    const accessToken = tokenResponse.access_token;
-    setUserToken(accessToken);
-    // oauth2Client.setCredentials(tokenResponse);
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: onLoginSuccess,
-    flow: "implicit",
-    scope: "https://www.googleapis.com/auth/admin.directory.user",
-  });
-
   const getUserList = async (token: string) => {
-    const response = await fetch(
+    await fetch(
       "https://admin.googleapis.com/admin/directory/v1/users?customer=my_customer",
       {
         method: "GET",
@@ -46,7 +31,7 @@ export const SignUp = () => {
   };
 
   const getSpecificUser = async (token: string, email: string) => {
-    const response = await fetch(
+    await fetch(
       `https://admin.googleapis.com/admin/directory/v1/users/${email}`,
       {
         method: "GET",
@@ -67,7 +52,7 @@ export const SignUp = () => {
   return (
     <div className="App">
       <Container>
-        <Button onClick={login} color="crimson" text="Auth Me"></Button>
+        <GoogleSignUp setAccessToken={setUserToken} />
         <Button
           onClick={() => getUserList(userToken ?? "")}
           // onClick={() => listUsers(oauth2Client)}
