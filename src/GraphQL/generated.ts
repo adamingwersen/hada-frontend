@@ -16,6 +16,57 @@ export type Scalars = {
   Date: any;
 };
 
+export type AuthenticateResponse = {
+  __typename?: 'AuthenticateResponse';
+  success: Scalars['Boolean'];
+};
+
+export type Cookie = {
+  __typename?: 'Cookie';
+  domain: Scalars['String'];
+  expirationDate?: Maybe<Scalars['Float']>;
+  hostOnly?: Maybe<Scalars['Boolean']>;
+  httpOnly?: Maybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  path?: Maybe<Scalars['String']>;
+  sameSite?: Maybe<Scalars['String']>;
+  secure?: Maybe<Scalars['Boolean']>;
+  session?: Maybe<Scalars['Boolean']>;
+  storeId?: Maybe<Scalars['String']>;
+  value: Scalars['String'];
+};
+
+export type CookieCollection = {
+  __typename?: 'CookieCollection';
+  _id?: Maybe<Scalars['ID']>;
+  cookies: Array<Cookie>;
+  domain: Scalars['String'];
+  email: Scalars['String'];
+  iv?: Maybe<Scalars['String']>;
+  orgId: Scalars['String'];
+};
+
+export type CookieDomains = {
+  __typename?: 'CookieDomains';
+  domain: Scalars['String'];
+  email: Scalars['String'];
+  orgId: Scalars['String'];
+};
+
+export type CreateCookieInput = {
+  domain: Scalars['String'];
+  expirationDate?: InputMaybe<Scalars['Float']>;
+  hostOnly?: InputMaybe<Scalars['Boolean']>;
+  httpOnly?: InputMaybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  path?: InputMaybe<Scalars['String']>;
+  sameSite?: InputMaybe<Scalars['String']>;
+  secure?: InputMaybe<Scalars['Boolean']>;
+  session?: InputMaybe<Scalars['Boolean']>;
+  storeId?: InputMaybe<Scalars['String']>;
+  value: Scalars['String'];
+};
+
 export type CreateEmployeeInput = {
   departments?: InputMaybe<Array<DepartmentInput>>;
   hireDate: Scalars['Date'];
@@ -50,8 +101,15 @@ export type Employee = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  authenticate: AuthenticateResponse;
   createEmployee?: Maybe<Employee>;
   createOrganisation: Organisation;
+  upsertCookie?: Maybe<CookieCollection>;
+};
+
+
+export type MutationAuthenticateArgs = {
+  token: Scalars['String'];
 };
 
 
@@ -62,6 +120,14 @@ export type MutationCreateEmployeeArgs = {
 
 export type MutationCreateOrganisationArgs = {
   organisation?: InputMaybe<CreateOrganisationInput>;
+};
+
+
+export type MutationUpsertCookieArgs = {
+  cookies: Array<CreateCookieInput>;
+  domain: Scalars['String'];
+  email: Scalars['String'];
+  orgId: Scalars['String'];
 };
 
 export type Organisation = {
@@ -78,6 +144,9 @@ export type Query = {
   __typename?: 'Query';
   findEmployeeById?: Maybe<Employee>;
   findOrganisationById: Organisation;
+  getCookiesByOrgId: Array<CookieCollection>;
+  getSupportedDomains?: Maybe<Array<Maybe<Scalars['String']>>>;
+  getUnsupportedDomains?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
 
@@ -90,12 +159,31 @@ export type QueryFindOrganisationByIdArgs = {
   id: Scalars['ID'];
 };
 
+
+export type QueryGetCookiesByOrgIdArgs = {
+  orgId: Scalars['String'];
+};
+
+export type User = {
+  __typename?: 'User';
+  _id: Scalars['ID'];
+  email: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type CreateOrganisationMutationVariables = Exact<{
   organisation?: InputMaybe<CreateOrganisationInput>;
 }>;
 
 
 export type CreateOrganisationMutation = { __typename?: 'Mutation', createOrganisation: { __typename?: 'Organisation', _id?: string | null, name: string, industryType: string, planTier: string } };
+
+export type GetCookiesByOrgIdQueryVariables = Exact<{
+  orgId: Scalars['String'];
+}>;
+
+
+export type GetCookiesByOrgIdQuery = { __typename?: 'Query', getCookiesByOrgId: Array<{ __typename?: 'CookieCollection', orgId: string, domain: string, email: string }> };
 
 export type GetOrganisationByIdQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -141,6 +229,43 @@ export function useCreateOrganisationMutation(baseOptions?: Apollo.MutationHookO
 export type CreateOrganisationMutationHookResult = ReturnType<typeof useCreateOrganisationMutation>;
 export type CreateOrganisationMutationResult = Apollo.MutationResult<CreateOrganisationMutation>;
 export type CreateOrganisationMutationOptions = Apollo.BaseMutationOptions<CreateOrganisationMutation, CreateOrganisationMutationVariables>;
+export const GetCookiesByOrgIdDocument = gql`
+    query getCookiesByOrgId($orgId: String!) {
+  getCookiesByOrgId(orgId: $orgId) {
+    orgId
+    domain
+    email
+  }
+}
+    `;
+
+/**
+ * __useGetCookiesByOrgIdQuery__
+ *
+ * To run a query within a React component, call `useGetCookiesByOrgIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCookiesByOrgIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCookiesByOrgIdQuery({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *   },
+ * });
+ */
+export function useGetCookiesByOrgIdQuery(baseOptions: Apollo.QueryHookOptions<GetCookiesByOrgIdQuery, GetCookiesByOrgIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCookiesByOrgIdQuery, GetCookiesByOrgIdQueryVariables>(GetCookiesByOrgIdDocument, options);
+      }
+export function useGetCookiesByOrgIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCookiesByOrgIdQuery, GetCookiesByOrgIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCookiesByOrgIdQuery, GetCookiesByOrgIdQueryVariables>(GetCookiesByOrgIdDocument, options);
+        }
+export type GetCookiesByOrgIdQueryHookResult = ReturnType<typeof useGetCookiesByOrgIdQuery>;
+export type GetCookiesByOrgIdLazyQueryHookResult = ReturnType<typeof useGetCookiesByOrgIdLazyQuery>;
+export type GetCookiesByOrgIdQueryResult = Apollo.QueryResult<GetCookiesByOrgIdQuery, GetCookiesByOrgIdQueryVariables>;
 export const GetOrganisationByIdDocument = gql`
     query getOrganisationById($id: ID!) {
   findOrganisationById(id: $id) {

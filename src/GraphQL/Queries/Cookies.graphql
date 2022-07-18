@@ -1,0 +1,7 @@
+query getCookiesByOrgId($orgId: String!) {
+  getCookiesByOrgId(orgId: $orgId) {
+    orgId
+    domain
+    email
+  }
+}
